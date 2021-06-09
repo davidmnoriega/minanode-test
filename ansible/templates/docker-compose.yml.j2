@@ -1,11 +1,11 @@
 version: '2.4'
 services:
   mina:
-    # restart: always
+    restart: always
     image: minaprotocol/mina-daemon-baked:1.1.5-a42bdee
     ports:
-      - "8302:8302"
-      - "8888:8888"
+      - "8302:8302" # Mina port
+      - "8888:8888" # Prometheus metrics port
     volumes:
       - /mina/keys:/keys:ro
       - /mina/.mina-config:/root/.mina-config
