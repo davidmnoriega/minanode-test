@@ -1,0 +1,47 @@
+- name: Setup Docker
+  hosts: minanodes
+  become: true
+  vars:
+    ansible_python_interpreter: /bin/python3
+    docker_install_compose: false
+    pip_install_packages:
+      - docker-compose
+  tasks:
+    - import_role:
+        name: pip
+      tags: pip
+
+    - import_role:
+        name: docker
+      tags: docker
+
+- name: Deploy mina
+  hosts: minanodes
+  become: true
+  vars:
+    ansible_python_interpreter: /bin/python3
+  tasks:
+    - name: Setup directories
+      file:
+        path: "{{ item }}"
+        mode: 0700
+        state: directory
+      loop:
+        - /mina/keys
+        - /mina/.mina-config
+
+    - name: deploy private key
+      copy:
+        content: "{{ private_key }}"
+        dest: /mina/keys/my-wallet
+        mode: 0600
+
+    - name: Deploy docker-compose.yml
+      template:
+        src: docker-compose.yml.j2
+        dest: /mina/docker-compose.yml
+
+    - name: docker-compose up mina
+      docker_compose:
+        project_src: /mina
+      register: output

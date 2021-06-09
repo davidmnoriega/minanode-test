@@ -1,0 +1,15 @@
+version: '2.4'
+services:
+  mina:
+    # restart: always
+    image: minaprotocol/mina-daemon-baked:1.1.5-a42bdee
+    ports:
+      - "8302:8302"
+      - "8888:8888"
+    volumes:
+      - /mina/keys:/keys:ro
+      - /mina/.mina-config:/root/.mina-config
+    environment:
+      CODA_PRIVKEY_PASS: {{ password }}
+    # mina does not like it when command is a list, I wonder if there are any invisible characters
+    command: daemon --insecure-rest-server --metrics-port 8888 --file-log-level Debug --log-level Info --peer-list-url https://storage.googleapis.com/mina-seed-lists/mainnet_seeds.txt
